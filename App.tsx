@@ -106,9 +106,22 @@ export default function App() {
           <Text style={styles.headerSubtitle}>Speed Warning System</Text>
         </View>
 
-        <View style={styles.speedometerContainer}>
-          <Text style={styles.speedValue}>{currentSpeed}</Text>
-          <Text style={styles.speedUnit}>KM/H</Text>
+        <View style={[
+          styles.speedometerContainer,
+          currentSpeed >= SPEED_LIMIT_KMH && styles.speedometerContainerAlert
+        ]}>
+          <Text style={[
+            styles.speedValue,
+            currentSpeed >= SPEED_LIMIT_KMH && styles.textAlert
+          ]}>
+            {currentSpeed}
+          </Text>
+          <Text style={[
+            styles.speedUnit,
+            currentSpeed >= SPEED_LIMIT_KMH && styles.textAlert
+          ]}>
+            KM/H
+          </Text>
           <Text style={styles.thresholdText}>Limit: {SPEED_LIMIT_KMH} KM/H</Text>
         </View>
 
@@ -163,6 +176,9 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
     backgroundColor: '#1e1e1e',
   },
+  speedometerContainerAlert: {
+    borderColor: '#ff3b30',
+  },
   speedValue: {
     fontSize: 72,
     fontWeight: '700',
@@ -173,6 +189,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#ffffff',
     marginBottom: 5,
+  },
+  textAlert: {
+    color: '#ff3b30',
   },
   thresholdText: {
     fontSize: 12,
