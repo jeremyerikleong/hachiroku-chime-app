@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAudioPlayer } from 'expo-audio';
@@ -61,15 +61,32 @@ export default function App() {
   };
 
   function stopTracking() {
-    if (locationSubscription.current) {
-      locationSubscription.current.remove();
-      locationSubscription.current = null;
-    }
-    setIsTracking(false);
-    setCurrentSpeed(0);
-    hasChimedRef.current = false;
-    setStatusMessage('Tracking stopped');
-  };
+    Alert.alert(
+      'Stop Trip?',
+      'Are you sure you want to end your speed tracking session?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Stop',
+          style: 'destructive',
+          onPress: () => {
+            if (locationSubscription.current) {
+              locationSubscription.current.remove();
+              locationSubscription.current = null;
+            }
+            setIsTracking(false);
+            setCurrentSpeed(0);
+            hasChimedRef.current = false;
+            setStatusMessage('Tracking stopped');
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  }
 
   useEffect(() => {
     return () => {
