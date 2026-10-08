@@ -1,0 +1,1 @@
+export const SPEED_LIMIT_KMH = 100;
