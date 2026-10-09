@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert, Switch } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAudioPlayer } from 'expo-audio';
@@ -17,6 +17,7 @@ export default function App() {
   const [currentSpeed, setCurrentSpeed] = useState<number>(0);
   const [isTracking, setIsTracking] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('Press Start to begin tracking');
+  const [isChimeEnabled, setIsChimeEnabled] = useState<boolean>(true);
 
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
   const hasChimedRef = useRef<boolean>(false);
@@ -60,7 +61,7 @@ export default function App() {
         setCurrentSpeed(roundedSpeed);
 
         if (roundedSpeed >= SPEED_LIMIT_KMH) {
-          if (!hasChimedRef.current) {
+          if (!hasChimedRef.current && isChimeEnabled) {
             playChime();
             hasChimedRef.current = true;
           }
@@ -113,8 +114,21 @@ export default function App() {
         <StatusBar barStyle="light-content" />
 
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
-          <Text style={styles.headerSubtitle}>Speed Warning System</Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
+            <Text style={styles.headerSubtitle}>Speed Warning System</Text>
+          </View>
+
+          <View style={styles.headerToggleContainer}>
+            <Text style={styles.toggleLabel}>Chime</Text>
+            <Switch
+              value={isChimeEnabled}
+              onValueChange={setIsChimeEnabled}
+              trackColor={{ false: '#333333', true: '#34c759' }}
+              thumbColor={'#ffffff'}
+              style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
+            />
+          </View>
         </View>
 
         <View style={styles.speedometerContainer}>
@@ -185,8 +199,35 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
+    width: '90%',
+    marginTop: 10,
+    paddingHorizontal: 4,
+  },
+  headerTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  headerToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+    paddingVertical: 4,
+    paddingLeft: 10,
+    paddingRight: 2,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+    flexShrink: 0,
+  },
+  toggleLabel: {
+    color: '#aaaaaa',
+    fontSize: 12,
+    fontWeight: '600',
+    marginRight: 4,
+    textTransform: 'uppercase',
   },
   headerTitle: {
     fontSize: 24,
