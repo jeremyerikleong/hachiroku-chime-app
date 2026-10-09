@@ -3,8 +3,15 @@ import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert } from 'reac
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAudioPlayer } from 'expo-audio';
+import Svg, { Circle } from 'react-native-svg';
 
-import { SPEED_LIMIT_KMH } from './src/constants/config';
+import { SPEED_LIMIT_KMH, MAX_SPEED_SCALE } from './src/constants/config';
+
+const CIRCLE_SIZE = 240;
+const STROKE_WIDTH = 10;
+const RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
+const FULL_CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const ARC_LENGTH = FULL_CIRCUMFERENCE * 0.75;
 
 export default function App() {
   const [currentSpeed, setCurrentSpeed] = useState<number>(0);
@@ -14,6 +21,10 @@ export default function App() {
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
   const hasChimedRef = useRef<boolean>(false);
   const chimePlayer = useAudioPlayer(require('./assets/ae86_chime.mp3'));
+
+  const clampedSpeed = Math.min(currentSpeed, MAX_SPEED_SCALE);
+  const strokeDashoffset = ARC_LENGTH - (clampedSpeed / MAX_SPEED_SCALE) * ARC_LENGTH;
+  const isOverLimit = currentSpeed >= SPEED_LIMIT_KMH;
 
   function playChime() {
     try {
@@ -106,23 +117,45 @@ export default function App() {
           <Text style={styles.headerSubtitle}>Speed Warning System</Text>
         </View>
 
-        <View style={[
-          styles.speedometerContainer,
-          currentSpeed >= SPEED_LIMIT_KMH && styles.speedometerContainerAlert
-        ]}>
-          <Text style={[
-            styles.speedValue,
-            currentSpeed >= SPEED_LIMIT_KMH && styles.textAlert
-          ]}>
-            {currentSpeed}
-          </Text>
-          <Text style={[
-            styles.speedUnit,
-            currentSpeed >= SPEED_LIMIT_KMH && styles.textAlert
-          ]}>
-            KM/H
-          </Text>
-          <Text style={styles.thresholdText}>Limit: {SPEED_LIMIT_KMH} KM/H</Text>
+        <View style={styles.speedometerContainer}>
+          <Svg height={CIRCLE_SIZE} width={CIRCLE_SIZE} style={styles.svgRing}>
+            <Circle
+              cx={CIRCLE_SIZE / 2}
+              cy={CIRCLE_SIZE / 2}
+              r={RADIUS}
+              stroke="#2a2a2a"
+              strokeWidth={STROKE_WIDTH}
+              strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
+              strokeLinecap="round"
+              fill="none"
+              rotation="135"
+              origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
+            />
+
+            <Circle
+              cx={CIRCLE_SIZE / 2}
+              cy={CIRCLE_SIZE / 2}
+              r={RADIUS}
+              stroke={isOverLimit ? '#ff3b30' : '#ffffff'}
+              strokeWidth={STROKE_WIDTH}
+              strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              fill="none"
+              rotation="135"
+              origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
+            />
+          </Svg>
+
+          <View style={styles.speedContent}>
+            <Text style={[styles.speedValue, isOverLimit && styles.textAlert]}>
+              {currentSpeed}
+            </Text>
+            <Text style={[styles.speedUnit, isOverLimit && styles.textAlert]}>
+              KM/H
+            </Text>
+            <Text style={styles.thresholdText}>Limit: {SPEED_LIMIT_KMH} KM/H</Text>
+          </View>
         </View>
 
         <View style={styles.controlContainer}>
@@ -169,15 +202,20 @@ const styles = StyleSheet.create({
   speedometerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    borderWidth: 4,
-    borderColor: '#ffffff',
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
     backgroundColor: '#1e1e1e',
+    position: 'relative',
   },
-  speedometerContainerAlert: {
-    borderColor: '#ff3b30',
+  svgRing: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  speedContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   speedValue: {
     fontSize: 72,
