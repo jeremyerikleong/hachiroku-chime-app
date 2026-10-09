@@ -8,7 +8,13 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jeremyerikleong.react-native-hachiroku-chime-app"
+      "bundleIdentifier": "com.jeremyerikleong.react-native-hachiroku-chime-app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "audio"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,13 +24,23 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.jeremyerikleong.reactnativehachirokuchimeapp"
+      "package": "com.jeremyerikleong.reactnativehachirokuchimeapp",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-audio"
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true
+        }
+      ]
     ]
   }
 }
