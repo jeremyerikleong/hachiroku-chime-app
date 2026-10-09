@@ -152,24 +152,32 @@ export default function App() {
         <StatusBar barStyle="light-content" />
 
         <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
-            <Text style={styles.headerSubtitle}>Speed Warning System</Text>
+          <View style={styles.headerTopRow}>
+            <View>
+              <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
+              <Text style={styles.headerSubtitle}>Speed Warning System</Text>
+            </View>
           </View>
 
-          <View style={styles.headerToggleContainer}>
-            <Text style={styles.toggleLabel}>Chime</Text>
-            <Switch
-              value={isChimeEnabled}
-              onValueChange={setIsChimeEnabled}
-              trackColor={{ false: '#333333', true: '#34c759' }}
-              thumbColor={'#ffffff'}
-              style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
-            />
+          <View style={styles.headerBottomRow}>
+            <View style={styles.headerToggleContainer}>
+              <Text style={styles.toggleLabel}>Chime Sound</Text>
+              <Switch
+                value={isChimeEnabled}
+                onValueChange={setIsChimeEnabled}
+                trackColor={{ false: '#333333', true: '#34c759' }}
+                thumbColor={'#ffffff'}
+                style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.btnGear}
+              onPress={() => setIsSettingsVisible(true)}
+            >
+              <Text style={styles.gearText}>⚙️</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.btnGear} onPress={() => setIsSettingsVisible(true)}>
-            <Text style={styles.gearText}>⚙️</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.speedometerContainer}>
@@ -322,48 +330,47 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   header: {
+    width: '90%',
+    marginTop: 10,
+  },
+  headerTopRow: {
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  headerBottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '90%',
-    marginTop: 10,
-    paddingHorizontal: 4,
-  },
-  headerTextContainer: {
-    flex: 1,
-    marginRight: 12,
   },
   headerToggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1e1e1e',
-    paddingVertical: 4,
-    paddingLeft: 10,
-    paddingRight: 2,
-    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#2a2a2a',
-    flexShrink: 0,
+    flex: 1,
+    marginRight: 10,
+    justifyContent: 'space-between',
   },
   toggleLabel: {
-    color: '#aaaaaa',
-    fontSize: 12,
+    color: '#dddddd',
+    fontSize: 13,
     fontWeight: '600',
-    marginRight: 4,
-    textTransform: 'uppercase',
   },
   btnGear: {
-    backgroundColor: '#1e1e1e',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
   },
   gearText: {
+    color: '#ffffff',
     fontSize: 16,
+    fontWeight: '600',
   },
   headerTitle: {
     fontSize: 24,
