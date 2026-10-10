@@ -40,6 +40,12 @@
         {
           "enableBackgroundPlayback": true
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow JDM Speed Tracker to access your location to track driving speed and trigger the warning chime."
+        }
       ]
     ]
   }
