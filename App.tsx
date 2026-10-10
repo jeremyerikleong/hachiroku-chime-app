@@ -27,6 +27,17 @@ export default function App() {
   const [maxSpeedScale, setMaxSpeedScale] = useState<number>(180);
   const [isSettingsVisible, setIsSettingsVisible] = useState<boolean>(false);
 
+  const speedLimitRef = useRef<number>(speedLimit);
+  const isChimeEnabledRef = useRef<boolean>(isChimeEnabled);
+
+  useEffect(() => {
+    speedLimitRef.current = speedLimit;
+  }, [speedLimit]);
+
+  useEffect(() => {
+    isChimeEnabledRef.current = isChimeEnabled;
+  }, [isChimeEnabled]);
+
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
   const speedExceededCountRef = useRef<number>(0);
   const hasChimedRef = useRef<boolean>(false);
@@ -109,10 +120,13 @@ export default function App() {
 
         setCurrentSpeed(roundedSpeed);
 
-        if (roundedSpeed >= speedLimit) {
+        const currentLimit = speedLimitRef.current;
+        const chimeOn = isChimeEnabledRef.current;
+
+        if (roundedSpeed >= currentLimit) {
           speedExceededCountRef.current += 1;
 
-          if (speedExceededCountRef.current >= 2 && !hasChimedRef.current && isChimeEnabled) {
+          if (speedExceededCountRef.current >= 2 && !hasChimedRef.current && chimeOn) {
             playChime();
             hasChimedRef.current = true;
           }
