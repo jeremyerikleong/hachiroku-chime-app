@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert, Switch, Mod
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAudioPlayer } from 'expo-audio';
+import * as Haptics from 'expo-haptics';
 import Svg, { Circle } from 'react-native-svg';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -75,6 +76,7 @@ export default function App() {
 
   function playChime() {
     try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       chimePlayer.seekTo(0);
       chimePlayer.play();
     } catch (err) {
