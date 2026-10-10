@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
   thresholdText: {
     fontSize: 12,
     color: '#aaaaaa',
-    textTransform: 'capitalize',
   },
   controlContainer: {
     width: '80%',

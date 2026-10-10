@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "react-native-hachiroku-chime-app",
-    "slug": "react-native-hachiroku-chime-app",
+    "name": "KinKon",
+    "slug": "kinkon-speed-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jeremyerikleong.react-native-hachiroku-chime-app",
+      "bundleIdentifier": "com.jeremyerikleong.kinkonspeedtracker",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
@@ -19,12 +19,12 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-icon.png",
+        "monochromeImage": "./assets/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.jeremyerikleong.reactnativehachirokuchimeapp",
+      "package": "com.jeremyerikleong.kinkonspeedtracker",
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -32,7 +32,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.ico"
     },
     "plugins": [
       [
@@ -45,6 +45,15 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "Allow JDM Speed Tracker to access your location to track driving speed and trigger the warning chime."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#121212"
         }
       ]
     ]
