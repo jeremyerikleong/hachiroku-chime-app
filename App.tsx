@@ -28,6 +28,7 @@ export default function App() {
   const [isSettingsVisible, setIsSettingsVisible] = useState<boolean>(false);
 
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
+  const speedExceededCountRef = useRef<number>(0);
   const hasChimedRef = useRef<boolean>(false);
   const chimePlayer = useAudioPlayer(require('./assets/ae86_chime.mp3'));
 
@@ -109,11 +110,14 @@ export default function App() {
         setCurrentSpeed(roundedSpeed);
 
         if (roundedSpeed >= speedLimit) {
-          if (!hasChimedRef.current && isChimeEnabled) {
+          speedExceededCountRef.current += 1;
+
+          if (speedExceededCountRef.current >= 2 && !hasChimedRef.current && isChimeEnabled) {
             playChime();
             hasChimedRef.current = true;
           }
         } else {
+          speedExceededCountRef.current = 0;
           hasChimedRef.current = false;
         }
       }
