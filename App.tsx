@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert, Switch, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert, Modal } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useAudioPlayer } from 'expo-audio';
@@ -82,7 +82,7 @@ export default function App() {
     try {
       await AsyncStorage.setItem(STORAGE_KEY_MAX_SCALE, value.toString());
     } catch (err) {
-      console.log('Failed to save max scale:', err);
+      console.log('Failed to save top scale:', err);
     }
   }
 
@@ -172,72 +172,87 @@ export default function App() {
         <StatusBar barStyle="light-content" />
 
         <View style={styles.header}>
-          <View style={styles.headerTopRow}>
-            <View>
-              <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
-              <Text style={styles.headerSubtitle}>Speed Warning System</Text>
-            </View>
+          <View>
+            <Text style={styles.headerTitle}>Kin-Kon Chime</Text>
+            <Text style={styles.headerSubtitle}>Speed Warning System</Text>
           </View>
 
-          <View style={styles.headerBottomRow}>
-            <View style={styles.headerToggleContainer}>
-              <Text style={styles.toggleLabel}>Chime Sound</Text>
-              <Switch
-                value={isChimeEnabled}
-                onValueChange={setIsChimeEnabled}
-                trackColor={{ false: '#333333', true: '#34c759' }}
-                thumbColor={'#ffffff'}
-                style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.btnGear}
-              onPress={() => setIsSettingsVisible(true)}
-            >
-              <Text style={styles.gearText}>⚙️</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.btnGear}
+            onPress={() => setIsSettingsVisible(true)}
+          >
+            <Text style={styles.gearText}>⚙️</Text>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.speedometerContainer}>
-          <Svg height={CIRCLE_SIZE} width={CIRCLE_SIZE} style={styles.svgRing}>
-            <Circle
-              cx={CIRCLE_SIZE / 2}
-              cy={CIRCLE_SIZE / 2}
-              r={RADIUS}
-              stroke="#2a2a2a"
-              strokeWidth={STROKE_WIDTH}
-              strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
-              strokeLinecap="round"
-              fill="none"
-              rotation="135"
-              origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
-            />
+        <View style={styles.speedometerWrapper}>
+          <View style={styles.speedometerContainer}>
+            <Svg height={CIRCLE_SIZE} width={CIRCLE_SIZE} style={styles.svgRing}>
+              <Circle
+                cx={CIRCLE_SIZE / 2}
+                cy={CIRCLE_SIZE / 2}
+                r={RADIUS}
+                stroke="#2a2a2a"
+                strokeWidth={STROKE_WIDTH}
+                strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
+                strokeLinecap="round"
+                fill="none"
+                rotation="135"
+                origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
+              />
 
-            <Circle
-              cx={CIRCLE_SIZE / 2}
-              cy={CIRCLE_SIZE / 2}
-              r={RADIUS}
-              stroke={isOverLimit ? '#ff3b30' : '#ffffff'}
-              strokeWidth={STROKE_WIDTH}
-              strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              fill="none"
-              rotation="135"
-              origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
-            />
-          </Svg>
+              <Circle
+                cx={CIRCLE_SIZE / 2}
+                cy={CIRCLE_SIZE / 2}
+                r={RADIUS}
+                stroke={isOverLimit ? '#ff3b30' : '#ffffff'}
+                strokeWidth={STROKE_WIDTH}
+                strokeDasharray={`${ARC_LENGTH} ${FULL_CIRCUMFERENCE}`}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                fill="none"
+                rotation="135"
+                origin={`${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2}`}
+              />
+            </Svg>
 
-          <View style={styles.speedContent}>
-            <Text style={[styles.speedValue, isOverLimit && styles.textAlert]}>
-              {currentSpeed}
+            <View style={styles.speedContent}>
+              <Text style={[styles.speedValue, isOverLimit && styles.textAlert]}>
+                {currentSpeed}
+              </Text>
+              <Text style={[styles.speedUnit, isOverLimit && styles.textAlert]}>
+                KM/H
+              </Text>
+            </View>
+          </View>
+
+          <Text style={styles.thresholdText}>Limit: {speedLimit} KM/H</Text>
+        </View>
+
+        <View style={styles.toggleWrapper}>
+          <TouchableOpacity
+            style={[
+              styles.toggleContainer,
+              isChimeEnabled ? styles.toggleContainerActive : styles.toggleContainerInactive
+            ]}
+            onPress={() => setIsChimeEnabled(!isChimeEnabled)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.toggleTopRow}>
+              <Text style={styles.toggleLabel}>Chime Sound</Text>
+            </View>
+            <Text style={[styles.toggleText, { color: isChimeEnabled ? '#34c759' : '#ff3b30' }]}>
+              {isChimeEnabled ? 'Enabled (ON)' : 'Disabled (OFF)'}
             </Text>
-            <Text style={[styles.speedUnit, isOverLimit && styles.textAlert]}>
-              KM/H
+          </TouchableOpacity>
+
+          <View style={[styles.toggleContainer, styles.infoContainer]}>
+            <View style={styles.toggleTopRow}>
+              <Text style={styles.toggleLabel}>Max Scale</Text>
+            </View>
+            <Text style={[styles.toggleText, { color: '#ffffff' }]}>
+              {maxSpeedScale} <Text style={styles.smallUnit}>KM/H</Text>
             </Text>
-            <Text style={styles.thresholdText}>Limit: {speedLimit} KM/H</Text>
           </View>
         </View>
 
@@ -344,40 +359,66 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#181818',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 40,
   },
   header: {
     width: '90%',
-    marginTop: 10,
-  },
-  headerTopRow: {
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-  headerBottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2a2a2a',
+    marginTop: 10,
+    paddingBottom: 20,
   },
-  headerToggleContainer: {
+  toggleWrapper: {
+    width: '90%',
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  toggleContainer: {
+    flex: 1,
     backgroundColor: '#1e1e1e',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#2a2a2a',
-    flex: 1,
-    marginRight: 10,
     justifyContent: 'space-between',
   },
+  toggleContainerActive: {
+    borderColor: '#34c75955',
+    backgroundColor: '#1e2620',
+  },
+  toggleContainerInactive: {
+    borderColor: '#ff3b3055',
+    backgroundColor: '#261e1e',
+  },
+  infoContainer: {
+    opacity: 0.9,
+  },
+  toggleTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
   toggleLabel: {
-    color: '#dddddd',
-    fontSize: 13,
+    color: '#888888',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  toggleText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  smallUnit: {
+    fontSize: 11,
+    color: '#888888',
     fontWeight: '600',
   },
   btnGear: {
@@ -389,7 +430,7 @@ const styles = StyleSheet.create({
   },
   gearText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: '600',
   },
   headerTitle: {
@@ -399,9 +440,15 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#888888',
     marginTop: 4,
+  },
+  speedometerWrapper: {
+    width: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
   },
   speedometerContainer: {
     alignItems: 'center',
@@ -409,7 +456,6 @@ const styles = StyleSheet.create({
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
-    backgroundColor: '#1e1e1e',
     position: 'relative',
   },
   svgRing: {
@@ -436,18 +482,18 @@ const styles = StyleSheet.create({
     color: '#ff3b30',
   },
   thresholdText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#aaaaaa',
   },
   controlContainer: {
-    width: '80%',
+    width: '90%',
     alignItems: 'center',
-    marginBottom: 30,
+    marginVertical: 10,
   },
   statusText: {
     color: '#bbbbbb',
     fontSize: 14,
-    marginBottom: 20,
+    marginVertical: 20,
     textAlign: 'center',
   },
   button: {
